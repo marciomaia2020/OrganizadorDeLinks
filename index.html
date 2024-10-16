@@ -64,11 +64,15 @@
             border-radius: 4px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         a {
             text-decoration: none;
             color: #007bff;
+            font-size: 18px; /* Aumenta o tamanho do link */
+            flex-grow: 1; /* Faz o link ocupar a maior parte do espaço */
+            margin-right: 10px; /* Dá um espaço entre o link e o botão */
         }
 
         a:hover {
@@ -79,9 +83,12 @@
             background-color: #dc3545;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 5px; /* Ajuste de padding */
             border-radius: 4px;
             cursor: pointer;
+            font-size: 12px;
+            width: 60px; /* Define uma largura fixa para o botão */
+            text-align: center; /* Garante que o texto esteja centralizado */
         }
 
         .delete:hover {
