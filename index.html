@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Links</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="url"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Organizador de Links</h1>
+        <form id="link-form">
+            <input type="text" id="link-name" placeholder="Nome do Link" required>
+            <input type="url" id="link-url" placeholder="URL do Link" required>
+            <button type="submit">Adicionar Link</button>
+        </form>
+        <ul id="link-list"></ul>
+    </div>
+
+    <script>
+        // Carregar links do localStorage
+        document.addEventListener('DOMContentLoaded', loadLinks);
+
+        // Adicionar evento ao formulário
+        document.getElementById('link-form').addEventListener('submit', addLink);
+
+        function addLink(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('link-name').value;
+            const url = document.getElementById('link-url').value;
+
+            const link = { name, url };
+
+            // Salvar no localStorage
+            let links = localStorage.getItem('links') ? JSON.parse(localStorage.getItem('links')) : [];
+            links.push(link);
+            localStorage.setItem('links', JSON.stringify(links));
+
+            // Atualizar a lista de links
+            addLinkToDOM(link);
+
+            // Limpar formulário
+            document.getElementById('link-form').reset();
+        }
+
+        function loadLinks() {
+            let links = localStorage.getItem('links') ? JSON.parse(localStorage.getItem('links')) : [];
+
+            links.forEach(link => addLinkToDOM(link));
+        }
+
+        function addLinkToDOM(link) {
+            const ul = document.getElementById('link-list');
+            const li = document.createElement('li');
+            
+            li.innerHTML = `<a href="${link.url}" target="_blank">${link.name}</a>
+                            <button class="delete">Excluir</button>`;
+            
+            ul.appendChild(li);
+
+            // Adicionar funcionalidade de exclusão
+            li.querySelector('.delete').addEventListener('click', function () {
+                li.remove();
+                removeLink(link.url);
+            });
+        }
+
+        function removeLink(url) {
+            let links = JSON.parse(localStorage.getItem('links'));
+            links = links.filter(link => link.url !== url);
+            localStorage.setItem('links', JSON.stringify(links));
+        }
+    </script>
+</body>
+</html>
