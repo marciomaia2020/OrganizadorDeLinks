@@ -108,59 +108,50 @@
     </div>
 
     <script>
-        // Carregar links do localStorage
         document.addEventListener('DOMContentLoaded', loadLinks);
 
-        // Adicionar evento ao formulário
-        document.getElementById('link-form').addEventListener('submit', addLink);
+document.getElementById('link-form').addEventListener('submit', addLink);
 
-        function addLink(e) {
-            e.preventDefault();
+async function addLink(e) {
+    e.preventDefault();
+    const name = document.getElementById('link-name').value;
+    const url = document.getElementById('link-url').value;
 
-            const name = document.getElementById('link-name').value;
-            const url = document.getElementById('link-url').value;
+    const link = { name, url };
 
-            const link = { name, url };
+    // Enviar para o servidor
+    await fetch('http://localhost:3000/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(link)
+    });
 
-            // Salvar no localStorage
-            let links = localStorage.getItem('links') ? JSON.parse(localStorage.getItem('links')) : [];
-            links.push(link);
-            localStorage.setItem('links', JSON.stringify(links));
+    addLinkToDOM(link);
+    document.getElementById('link-form').reset();
+}
 
-            // Atualizar a lista de links
-            addLinkToDOM(link);
+async function loadLinks() {
+    const res = await fetch('http://localhost:3000/links');
+    const links = await res.json();
 
-            // Limpar formulário
-            document.getElementById('link-form').reset();
-        }
+    links.forEach(link => addLinkToDOM(link));
+}
 
-        function loadLinks() {
-            let links = localStorage.getItem('links') ? JSON.parse(localStorage.getItem('links')) : [];
+function addLinkToDOM(link) {
+    const ul = document.getElementById('link-list');
+    const li = document.createElement('li');
 
-            links.forEach(link => addLinkToDOM(link));
-        }
+    li.innerHTML = `<a href="${link.url}" target="_blank">${link.name}</a>
+                    <button class="delete">Excluir</button>`;
+    
+    ul.appendChild(li);
 
-        function addLinkToDOM(link) {
-            const ul = document.getElementById('link-list');
-            const li = document.createElement('li');
-            
-            li.innerHTML = `<a href="${link.url}" target="_blank">${link.name}</a>
-                            <button class="delete">Excluir</button>`;
-            
-            ul.appendChild(li);
+    li.querySelector('.delete').addEventListener('click', async function () {
+        li.remove();
+        await fetch(`http://localhost:3000/links/${link._id}`, { method: 'DELETE' });
+    });
+}
 
-            // Adicionar funcionalidade de exclusão
-            li.querySelector('.delete').addEventListener('click', function () {
-                li.remove();
-                removeLink(link.url);
-            });
-        }
-
-        function removeLink(url) {
-            let links = JSON.parse(localStorage.getItem('links'));
-            links = links.filter(link => link.url !== url);
-            localStorage.setItem('links', JSON.stringify(links));
-        }
     </script>
 </body>
 </html>
